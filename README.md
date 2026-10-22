@@ -2,6 +2,8 @@
 
 PWA mobile-first pentru evidența întârzierilor într-o echipă. Prima versiune funcționează complet în browser și păstrează datele în `localStorage`, fără backend.
 
+**Aplicație live:** https://paharul-intarzierilor.pages.dev
+
 ## Funcții
 
 - pahare animate pentru fiecare coleg; 1 minut = 2% din pahar;
