@@ -4,6 +4,8 @@ PWA mobile-first pentru evidența întârzierilor într-o echipă. Prima versiun
 
 **Aplicație live:** https://paharul-intarzierilor.pages.dev
 
+Orice modificare publicată pe ramura `main` este livrată automat prin Cloudflare Pages.
+
 ## Funcții
 
 - pahare animate pentru fiecare coleg; 1 minut = 2% din pahar;
