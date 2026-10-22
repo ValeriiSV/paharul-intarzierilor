@@ -8,11 +8,24 @@
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="./assets/icon.svg" />
-  <link rel="stylesheet" href="./styles.css?v=4" />
+  <link rel="stylesheet" href="./styles.css?v=5" />
   <title>Halba întârzierilor</title>
 </head>
-<body class="menu-expanded">
+<body class="menu-expanded auth-pending">
   <div class="noise" aria-hidden="true"></div><div class="red-orb orb-one" aria-hidden="true"></div><div class="red-orb orb-two" aria-hidden="true"></div>
+
+  <section class="auth-gate" id="authGate" aria-live="polite">
+    <div class="auth-visual" aria-hidden="true"><div class="auth-halo"></div><div class="auth-mug"><div class="auth-foam"><i></i><i></i><i></i><i></i></div><div class="auth-beer"><span></span><b></b></div></div></div>
+    <div class="auth-card glass-panel">
+      <span class="auth-logo">H</span>
+      <p class="eyebrow">ACCESUL ECHIPEI</p>
+      <h1>Intră în<br /><em>gașcă.</em></h1>
+      <p>Conectează-te cu Google pentru a vedea halbele, întârzierile și pagina de administrare.</p>
+      <button class="google-button" id="googleSignIn" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M21.6 12.2c0-.7-.1-1.4-.2-2H12v3.9h5.4a4.6 4.6 0 0 1-2 3v2.5h3.2c1.9-1.7 3-4.3 3-7.4Z"/><path fill="#34A853" d="M12 22c2.7 0 5-.9 6.6-2.4l-3.2-2.5c-.9.6-2 1-3.4 1a5.8 5.8 0 0 1-5.4-4H3.3v2.6A10 10 0 0 0 12 22Z"/><path fill="#FBBC05" d="M6.6 14.1a6 6 0 0 1 0-4.2V7.3H3.3a10 10 0 0 0 0 9.4l3.3-2.6Z"/><path fill="#EA4335" d="M12 5.9c1.5 0 2.8.5 3.8 1.5l2.9-2.8A9.7 9.7 0 0 0 3.3 7.3l3.3 2.6A5.8 5.8 0 0 1 12 5.9Z"/></svg><span>Continuă cu Google</span></button>
+      <div class="auth-status" id="authStatus">Conectare securizată prin Firebase</div>
+      <small>Prin conectare, contul Google este folosit doar pentru identificare în aplicație.</small>
+    </div>
+  </section>
 
   <aside class="app-menu glass-panel" id="appMenu">
     <div class="menu-brand"><span class="brand-icon">H</span><span class="menu-label"><strong>HALBA</strong><small>ÎNTÂRZIERILOR</small></span></div>
@@ -22,7 +35,7 @@
       <a href="#istoric" data-nav="istoric"><span class="nav-icon">◷</span><span class="menu-label">Istoric</span><b></b></a>
       <a href="#admin" data-nav="admin"><span class="nav-icon">◇</span><span class="menu-label">Admin</span><b></b></a>
     </nav>
-    <div class="menu-foot"><span class="online-dot"></span><span class="menu-label"><b>Date locale</b><small>PWA activă</small></span></div>
+    <div class="menu-account"><img id="authAvatar" alt="" /><span class="menu-label"><b id="authName">Cont Google</b><small id="authEmail">conectat</small></span><button id="logoutButton" type="button" aria-label="Deconectare" title="Deconectare">↪</button></div>
   </aside>
 
   <header class="content-topbar glass-panel">
@@ -75,6 +88,7 @@
   <dialog id="deleteDialog" class="modal mini-modal"><form method="dialog"><div class="warning">!</div><h2>Ștergem întârzierea?</h2><p>Minutele vor fi scoase imediat din halbă.</p><div class="dialog-actions"><button class="ghost-button" value="cancel">Renunță</button><button class="primary-button red-button" id="confirmDelete" value="default">Șterge</button></div></form></dialog>
   <dialog id="personDeleteDialog" class="modal mini-modal"><form method="dialog"><div class="warning">!</div><h2>Scoatem participantul?</h2><p>Nu va mai putea fi selectat. Înregistrările lui vechi rămân în istoric.</p><div class="dialog-actions"><button class="ghost-button" value="cancel">Renunță</button><button class="primary-button red-button" id="confirmPersonDelete" value="default">Scoate</button></div></form></dialog>
   <div class="toast" id="toast" role="status" aria-live="polite"><b>✓</b><span></span></div>
-  <script src="./app.js?v=4" defer></script>
+  <script type="module" src="./auth.js?v=1"></script>
+  <script src="./app.js?v=5" defer></script>
 </body>
 </html>

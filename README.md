@@ -11,6 +11,7 @@ Orice modificare publicată pe ramura `main` este livrată automat prin Cloudfla
 - meniu lateral animat, inspirat de interfețe neon moderne;
 - pagină Admin pentru lista oficială de participanți;
 - persoanele din formular pot fi alese doar din lista configurată de admin;
+- autentificare cu cont Google prin Firebase Authentication;
 
 - pahare animate pentru fiecare coleg; 1 minut = 2% din pahar;
 - formular pentru adăugare și corectare întârzieri;
