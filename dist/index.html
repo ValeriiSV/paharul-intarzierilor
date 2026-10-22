@@ -8,7 +8,7 @@
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="./assets/icon.svg" />
-  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./styles.css?v=2" />
   <title>Halba întârzierilor</title>
 </head>
 <body>
@@ -59,6 +59,6 @@
   <dialog id="lateDialog" class="modal"><form id="lateForm" method="dialog"><div class="modal-head"><div><p class="eyebrow" id="formEyebrow">UN STROP ÎN PLUS</p><h2 id="formTitle">Adaugă întârzierea</h2></div><button class="close-button" value="cancel" aria-label="Închide">×</button></div><input type="hidden" id="entryId" /><label>Nume și prenume<input id="nameInput" type="text" required maxlength="60" placeholder="Ex: Valeriu Svetlicenco" autocomplete="name" /></label><div class="form-row"><label>Câte minute?<input id="minutesInput" type="number" min="1" max="180" required inputmode="numeric" /></label><label>Data<input id="dateInput" type="date" required /></label></div><label>Motiv <span>(opțional)</span><input id="reasonInput" type="text" maxlength="80" placeholder="Trafic, alarma, cafeaua…" /></label><div class="quick-minutes"><button type="button" data-minutes="5">+5</button><button type="button" data-minutes="10">+10</button><button type="button" data-minutes="15">+15</button><button type="button" data-minutes="30">+30</button></div><button class="primary-button full" type="submit">Toarnă în halbă</button></form></dialog>
   <dialog id="deleteDialog" class="modal mini-modal"><form method="dialog"><div class="warning">!</div><h2>Ștergem întârzierea?</h2><p>Minutele vor fi scoase imediat din halbă.</p><div class="dialog-actions"><button class="ghost-button" value="cancel">Renunță</button><button class="primary-button red-button" id="confirmDelete" value="default">Șterge</button></div></form></dialog>
   <div class="toast" id="toast" role="status" aria-live="polite"><b>✓</b><span></span></div>
-  <script src="./app.js" defer></script>
+  <script src="./app.js?v=2" defer></script>
 </body>
 </html>
