@@ -1,7 +1,7 @@
 {
   "name": "Halba întârzierilor",
   "short_name": "Halba",
-  "description": "Fiecare minut întârziat umple halba pentru berea din weekend.",
+  "description": "Fiecare coleg are halba lui; cine așteaptă adună minute pentru berea din weekend.",
   "lang": "ro",
   "start_url": "./#acasa",
   "scope": "./",

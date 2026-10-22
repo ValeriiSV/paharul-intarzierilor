@@ -1,6 +1,6 @@
 # Halba întârzierilor
 
-PWA mobile-first inspirată dintr-un pact între doi colegi: fiecare minut de întârziere umple o halbă, iar la 100% urmează berea din weekend. Aplicația păstrează datele în `localStorage`, fără backend.
+PWA mobile-first inspirată dintr-un pact între doi colegi. Fiecare persoană are propria halbă: cine așteaptă primește minutele celui întârziat, iar la 60 de minute câștigă berea din weekend. Aplicația păstrează datele în `localStorage`, fără backend.
 
 **Aplicație live:** https://paharul-intarzierilor.pages.dev
 

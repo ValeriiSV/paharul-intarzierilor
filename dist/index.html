@@ -8,7 +8,7 @@
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="./assets/icon.svg" />
-  <link rel="stylesheet" href="./styles.css?v=2" />
+  <link rel="stylesheet" href="./styles.css?v=3" />
   <title>Halba întârzierilor</title>
 </head>
 <body>
@@ -23,32 +23,29 @@
       <div class="hero">
         <div class="hero-copy">
           <p class="eyebrow"><i></i> PACTUL NOSTRU DE DIMINEAȚĂ</p>
-          <h1>Câte minute<br />până la <em>bere?</em></h1>
-          <p>Tu mă aștepți în mașină. Eu întârzii. Fiecare minut umple halba, iar când ajunge la 100%, berea din weekend e din partea mea.</p>
-          <div class="hero-actions"><button class="primary-button" type="button" data-open-add><span>+</span> Am întârziat</button><button class="ghost-button" type="button" id="shareButton">Trimite colegului</button></div>
+          <h1>Fiecare cu<br /><em>halba lui.</em></h1>
+          <p>Cine așteaptă primește minutele. Dacă Spicica Vitalie te așteaptă în mașină, întârzierea ta umple halba lui. La 100%, îi datorezi berea.</p>
+          <div class="hero-actions"><button class="primary-button" type="button" data-open-add><span>+</span> Adaugă minute</button><button class="ghost-button" type="button" id="shareButton">Trimite colegului</button></div>
           <div class="week-label"><span>SĂPTĂMÂNA</span><b id="weekRange">—</b></div>
         </div>
-        <div class="mug-card glass-panel" id="mugCard">
-          <div class="mug-glow"></div>
-          <div class="mug-wrap" aria-label="Nivelul halbei">
-            <div class="mug"><div class="beer" id="beerLiquid"><div class="beer-wave wave-a"></div><div class="beer-wave wave-b"></div><i class="bubble b1"></i><i class="bubble b2"></i><i class="bubble b3"></i><i class="bubble b4"></i><i class="bubble b5"></i><div class="foam"><span></span><span></span><span></span><span></span><span></span></div></div><div class="glass-shine"></div></div>
-            <div class="mug-handle"></div><div class="mug-base"></div>
-          </div>
-          <div class="mug-status"><div><strong id="fillPercent">0%</strong><span>HALBA E PLINĂ</span></div><p><b id="weekMinutes">0</b> din <span id="goalMinutes">60</span> minute</p></div>
-          <div class="beer-won" id="beerWon"><b>🍺 Berea e câștigată!</b><span>Ne vedem în weekend.</span></div><div class="confetti" id="confetti" aria-hidden="true"></div>
+        <div class="rule-card glass-panel">
+          <p class="eyebrow">REGULA E SIMPLĂ</p><h2>Cine așteaptă,<br /><em>primește berea.</em></h2>
+          <div class="rule-flow"><div><span>01</span><b>Cine a așteptat?</b><small>Spicica Vitalie</small></div><i>→</i><div><span>02</span><b>Cine a întârziat?</b><small>Tu</small></div><i>→</i><div><span>03</span><b>Câte minute?</b><small>+12 în halba lui</small></div></div>
+          <div class="rule-quote">„12 minute mai aproape de bere.”</div>
         </div>
       </div>
+      <section class="mugs-section"><div class="section-heading"><div><p class="eyebrow">HALBELE SĂPTĂMÂNII</p><h2>Cine e mai aproape de bere?</h2></div></div><div class="mugs-grid" id="mugsGrid"></div><div class="confetti" id="confetti" aria-hidden="true"></div></section>
       <div class="stats-grid">
         <article class="glass-panel"><span class="stat-no">01</span><small>TOTAL ÎNTÂRZIERI</small><strong id="entryCount">0</strong><p>săptămâna aceasta</p></article>
-        <article class="glass-panel"><span class="stat-no">02</span><small>CAMPIONUL DIMINEȚII</small><strong id="leaderName">—</strong><p id="leaderMinutes">fără întârzieri</p></article>
-        <article class="glass-panel"><span class="stat-no">03</span><small>PÂNĂ LA BERE</small><strong id="remainingMinutes">60 min</strong><p>și ne vedem în weekend</p></article>
+        <article class="glass-panel"><span class="stat-no">02</span><small>CEA MAI PLINĂ HALBĂ</small><strong id="leaderName">—</strong><p id="leaderMinutes">fără minute</p></article>
+        <article class="glass-panel"><span class="stat-no">03</span><small>URMĂTOAREA BERE</small><strong id="remainingMinutes">60 min</strong><p>până la prima halbă plină</p></article>
       </div>
       <section class="entries-section">
         <div class="section-heading"><div><p class="eyebrow">JURNALUL DIMINEȚILOR</p><h2>Picătură cu picătură.</h2></div><button class="round-add" type="button" data-open-add aria-label="Adaugă întârziere">+</button></div>
         <div class="entries-list glass-panel" id="entriesList"></div>
       </section>
       <section class="weekend-card glass-panel" id="weekendCard">
-        <div class="weekend-number">WEEK<br /><b>END</b></div><div><p class="eyebrow">MIZA SĂPTĂMÂNII</p><h2 id="weekendTitle">Mai avem până la bere.</h2><p id="weekendCopy">Halba se umple cu fiecare minut de întârziere. La 60 de minute, planul de weekend este activat.</p></div><div class="weekend-lock" id="weekendLock">🔒</div>
+        <div class="weekend-number">WEEK<br /><b>END</b></div><div><p class="eyebrow">MIZA SĂPTĂMÂNII</p><h2 id="weekendTitle">Halbele încă se umplu.</h2><p id="weekendCopy">Fiecare coleg are propria halbă. Prima care ajunge la 60 de minute activează berea din weekend.</p></div><div class="weekend-lock" id="weekendLock">🔒</div>
       </section>
     </section>
     <section class="view" data-view="istoric">
@@ -56,9 +53,9 @@
     </section>
   </main>
   <footer><span>HALBA ÎNTÂRZIERILOR</span><p>Făcută pentru dimineți târzii și weekenduri bune.</p><small>Date salvate local • PWA</small></footer>
-  <dialog id="lateDialog" class="modal"><form id="lateForm" method="dialog"><div class="modal-head"><div><p class="eyebrow" id="formEyebrow">UN STROP ÎN PLUS</p><h2 id="formTitle">Adaugă întârzierea</h2></div><button class="close-button" value="cancel" aria-label="Închide">×</button></div><input type="hidden" id="entryId" /><label>Nume și prenume<input id="nameInput" type="text" required maxlength="60" placeholder="Ex: Valeriu Svetlicenco" autocomplete="name" /></label><div class="form-row"><label>Câte minute?<input id="minutesInput" type="number" min="1" max="180" required inputmode="numeric" /></label><label>Data<input id="dateInput" type="date" required /></label></div><label>Motiv <span>(opțional)</span><input id="reasonInput" type="text" maxlength="80" placeholder="Trafic, alarma, cafeaua…" /></label><div class="quick-minutes"><button type="button" data-minutes="5">+5</button><button type="button" data-minutes="10">+10</button><button type="button" data-minutes="15">+15</button><button type="button" data-minutes="30">+30</button></div><button class="primary-button full" type="submit">Toarnă în halbă</button></form></dialog>
+  <dialog id="lateDialog" class="modal"><form id="lateForm" method="dialog"><div class="modal-head"><div><p class="eyebrow" id="formEyebrow">UN STROP ÎN PLUS</p><h2 id="formTitle">Adaugă întârzierea</h2></div><button class="close-button" value="cancel" aria-label="Închide">×</button></div><input type="hidden" id="entryId" /><div class="form-row"><label>Cine a așteptat?<input id="waiterInput" type="text" required maxlength="60" placeholder="Ex: Spicica Vitalie" autocomplete="name" /></label><label>Cine a întârziat?<input id="latePersonInput" type="text" required maxlength="60" placeholder="Ex: Valeriu" /></label></div><div class="form-row"><label>Câte minute?<input id="minutesInput" type="number" min="1" max="180" required inputmode="numeric" /></label><label>Data<input id="dateInput" type="date" required /></label></div><label>Motiv <span>(opțional)</span><input id="reasonInput" type="text" maxlength="80" placeholder="Trafic, alarma, cafeaua…" /></label><div class="quick-minutes"><button type="button" data-minutes="5">+5</button><button type="button" data-minutes="10">+10</button><button type="button" data-minutes="15">+15</button><button type="button" data-minutes="30">+30</button></div><button class="primary-button full" type="submit">Toarnă în halba celui care a așteptat</button></form></dialog>
   <dialog id="deleteDialog" class="modal mini-modal"><form method="dialog"><div class="warning">!</div><h2>Ștergem întârzierea?</h2><p>Minutele vor fi scoase imediat din halbă.</p><div class="dialog-actions"><button class="ghost-button" value="cancel">Renunță</button><button class="primary-button red-button" id="confirmDelete" value="default">Șterge</button></div></form></dialog>
   <div class="toast" id="toast" role="status" aria-live="polite"><b>✓</b><span></span></div>
-  <script src="./app.js?v=2" defer></script>
+  <script src="./app.js?v=3" defer></script>
 </body>
 </html>
