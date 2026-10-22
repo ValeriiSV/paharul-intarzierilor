@@ -1,6 +1,6 @@
-# Paharul întârzierilor
+# Halba întârzierilor
 
-PWA mobile-first pentru evidența întârzierilor într-o echipă. Prima versiune funcționează complet în browser și păstrează datele în `localStorage`, fără backend.
+PWA mobile-first inspirată dintr-un pact între doi colegi: fiecare minut de întârziere umple o halbă, iar la 100% urmează berea din weekend. Aplicația păstrează datele în `localStorage`, fără backend.
 
 **Aplicație live:** https://paharul-intarzierilor.pages.dev
 

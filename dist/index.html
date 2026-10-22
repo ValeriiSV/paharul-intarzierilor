@@ -1,127 +1,64 @@
 <!doctype html>
 <html lang="ro">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#f7f4ed" />
-    <meta name="description" content="Paharul întârzierilor — un tracker prietenos pentru echipă." />
-    <link rel="manifest" href="./manifest.webmanifest" />
-    <link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="./assets/icon.svg" />
-    <link rel="stylesheet" href="./styles.css" />
-    <title>Paharul întârzierilor</title>
-  </head>
-  <body>
-    <div class="app-shell">
-      <header class="topbar">
-        <a class="brand" href="#acasa" aria-label="Paharul întârzierilor, acasă">
-          <span class="brand-mark" aria-hidden="true">P</span>
-          <span><strong>Paharul</strong><small>întârzierilor</small></span>
-        </a>
-        <div class="topbar-actions">
-          <div class="status-pill"><i></i><span>Luna în curs</span></div>
-          <button class="icon-button" id="themeToggle" type="button" aria-label="Schimbă tema">
-            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.6-.06-1.18-.17-1.74A7 7 0 0 1 13.74 3.17 9 9 0 0 0 12 3Z"/></svg>
-          </button>
-          <button class="avatar-button" type="button" data-open-admin aria-label="Deschide administrarea">VL</button>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0b0d" />
+  <meta name="description" content="Halba întârzierilor — fiecare minut ne apropie de berea din weekend." />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="./assets/icon.svg" />
+  <link rel="stylesheet" href="./styles.css" />
+  <title>Halba întârzierilor</title>
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div><div class="red-orb orb-one" aria-hidden="true"></div><div class="red-orb orb-two" aria-hidden="true"></div>
+  <header class="topbar glass-panel">
+    <a class="brand" href="#acasa" aria-label="Halba întârzierilor, acasă"><span class="brand-icon">H</span><span><strong>HALBA</strong><small>ÎNTÂRZIERILOR</small></span></a>
+    <nav aria-label="Navigare principală"><a href="#acasa" data-nav="acasa">Halba</a><a href="#istoric" data-nav="istoric">Istoric</a></nav>
+    <button class="header-add" type="button" data-open-add><span>+</span> Întârziere</button>
+  </header>
+  <main>
+    <section class="view active" data-view="acasa">
+      <div class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow"><i></i> PACTUL NOSTRU DE DIMINEAȚĂ</p>
+          <h1>Câte minute<br />până la <em>bere?</em></h1>
+          <p>Tu mă aștepți în mașină. Eu întârzii. Fiecare minut umple halba, iar când ajunge la 100%, berea din weekend e din partea mea.</p>
+          <div class="hero-actions"><button class="primary-button" type="button" data-open-add><span>+</span> Am întârziat</button><button class="ghost-button" type="button" id="shareButton">Trimite colegului</button></div>
+          <div class="week-label"><span>SĂPTĂMÂNA</span><b id="weekRange">—</b></div>
         </div>
-      </header>
-
-      <main>
-        <section class="view active" id="view-acasa" data-view="acasa">
-          <div class="hero">
-            <div>
-              <p class="eyebrow">ECHIPA TA • <span id="monthLabel"></span></p>
-              <h1>Micile întârzieri,<br /><em>la vedere.</em></h1>
-              <p class="hero-copy">Un mod prietenos de a ține evidența timpului. Fiecare minut umple paharul — fără supărare, doar transparență.</p>
-            </div>
-            <div class="hero-actions">
-              <button class="primary-button" type="button" data-open-add>
-                <span>+</span> Adaugă întârziere
-              </button>
-              <button class="secondary-button" type="button" data-open-admin>Administrează</button>
-            </div>
+        <div class="mug-card glass-panel" id="mugCard">
+          <div class="mug-glow"></div>
+          <div class="mug-wrap" aria-label="Nivelul halbei">
+            <div class="mug"><div class="beer" id="beerLiquid"><div class="beer-wave wave-a"></div><div class="beer-wave wave-b"></div><i class="bubble b1"></i><i class="bubble b2"></i><i class="bubble b3"></i><i class="bubble b4"></i><i class="bubble b5"></i><div class="foam"><span></span><span></span><span></span><span></span><span></span></div></div><div class="glass-shine"></div></div>
+            <div class="mug-handle"></div><div class="mug-base"></div>
           </div>
-
-          <div class="stat-strip" aria-label="Rezumat lunar">
-            <div><span class="stat-icon coral">↗</span><p><b id="totalMinutes">0</b><small>minute în total</small></p></div>
-            <div><span class="stat-icon mint">◎</span><p><b id="onTimeRate">0%</b><small>rată punctualitate</small></p></div>
-            <div><span class="stat-icon violet">♜</span><p><b id="topName">—</b><small>liderul lunii</small></p></div>
-            <div><span class="stat-icon amber">☀</span><p><b id="bestStreak">0 zile</b><small>cel mai bun streak</small></p></div>
-          </div>
-
-          <div class="section-heading">
-            <div><p class="eyebrow">PAHARELE ECHIPEI</p><h2>Cine a mai pus un strop?</h2></div>
-            <p class="scale-note"><span></span> 1 minut = 2% din pahar</p>
-          </div>
-          <div class="people-grid" id="peopleGrid"></div>
-        </section>
-
-        <section class="view" id="view-clasament" data-view="clasament">
-          <div class="page-heading">
-            <p class="eyebrow">CLASAMENT LUNAR</p>
-            <h1>Cursa pentru <em>punctualitate.</em></h1>
-            <p>Mai puține minute înseamnă un loc mai bun. Clasamentul se actualizează instant.</p>
-          </div>
-          <div class="leaderboard" id="leaderboard"></div>
-        </section>
-
-        <section class="view" id="view-istoric" data-view="istoric">
-          <div class="page-heading history-heading">
-            <div><p class="eyebrow">ARHIVĂ</p><h1>Istoricul <em>echipei.</em></h1></div>
-            <select id="historyMonth" class="select-control" aria-label="Alege luna"></select>
-          </div>
-          <div class="history-summary" id="historySummary"></div>
-          <div class="history-list" id="historyList"></div>
-        </section>
-
-        <section class="view" id="view-admin" data-view="admin">
-          <div class="page-heading admin-heading">
-            <div><p class="eyebrow">ZONĂ ADMIN</p><h1>Gestionează <em>înregistrările.</em></h1><p>Corectează sau șterge întârzierile din luna curentă.</p></div>
-            <button class="primary-button" type="button" data-open-add><span>+</span> Adaugă</button>
-          </div>
-          <div class="admin-panel">
-            <div class="admin-panel-head"><b>Întârzieri luna aceasta</b><span id="adminCount"></span></div>
-            <div class="admin-list" id="adminList"></div>
-          </div>
-          <button id="resetDemo" class="text-button danger" type="button">Restaurează datele demo</button>
-        </section>
-      </main>
-
-      <nav class="mobile-nav" aria-label="Navigare principală">
-        <a href="#acasa" data-nav="acasa"><span>⌂</span>Acasă</a>
-        <a href="#clasament" data-nav="clasament"><span>♜</span>Clasament</a>
-        <button type="button" data-open-add aria-label="Adaugă întârziere"><span>+</span></button>
-        <a href="#istoric" data-nav="istoric"><span>◷</span>Istoric</a>
-        <a href="#admin" data-nav="admin"><span>⚙</span>Admin</a>
-      </nav>
-
-      <footer><span>Paharul întârzierilor</span><p>Făcut pentru echipe care știu să râdă împreună.</p><small>v1.0 • Date salvate local</small></footer>
-    </div>
-
-    <dialog id="lateDialog" class="modal">
-      <form id="lateForm" method="dialog">
-        <div class="modal-head"><div><p class="eyebrow" id="formEyebrow">ÎNREGISTRARE NOUĂ</p><h2 id="formTitle">Adaugă o întârziere</h2></div><button class="close-button" value="cancel" aria-label="Închide">×</button></div>
-        <input type="hidden" id="entryId" />
-        <label>Cine a întârziat?<select id="personInput" required></select></label>
-        <div class="form-row">
-          <label>Câte minute?<input id="minutesInput" type="number" min="1" max="240" inputmode="numeric" required /></label>
-          <label>Data<input id="dateInput" type="date" required /></label>
+          <div class="mug-status"><div><strong id="fillPercent">0%</strong><span>HALBA E PLINĂ</span></div><p><b id="weekMinutes">0</b> din <span id="goalMinutes">60</span> minute</p></div>
+          <div class="beer-won" id="beerWon"><b>🍺 Berea e câștigată!</b><span>Ne vedem în weekend.</span></div><div class="confetti" id="confetti" aria-hidden="true"></div>
         </div>
-        <label>Motiv <span>(opțional)</span><input id="reasonInput" type="text" maxlength="80" placeholder="Ex: Trafic aglomerat" /></label>
-        <div class="quick-minutes" aria-label="Minute rapide"><button type="button" data-minutes="5">+5 min</button><button type="button" data-minutes="10">+10 min</button><button type="button" data-minutes="15">+15 min</button><button type="button" data-minutes="30">+30 min</button></div>
-        <button class="primary-button full" type="submit" value="default">Salvează întârzierea</button>
-      </form>
-    </dialog>
-
-    <dialog id="confirmDialog" class="modal small-modal">
-      <form method="dialog">
-        <div class="confirm-icon">!</div><h2>Ștergem înregistrarea?</h2><p>Această acțiune va actualiza imediat paharul și clasamentul.</p>
-        <div class="dialog-actions"><button class="secondary-button" value="cancel">Renunță</button><button class="primary-button danger-bg" id="confirmDelete" value="default">Șterge</button></div>
-      </form>
-    </dialog>
-
-    <div class="toast" id="toast" role="status" aria-live="polite"><span>✓</span><p></p></div>
-    <script src="./app.js" defer></script>
-  </body>
+      </div>
+      <div class="stats-grid">
+        <article class="glass-panel"><span class="stat-no">01</span><small>TOTAL ÎNTÂRZIERI</small><strong id="entryCount">0</strong><p>săptămâna aceasta</p></article>
+        <article class="glass-panel"><span class="stat-no">02</span><small>CAMPIONUL DIMINEȚII</small><strong id="leaderName">—</strong><p id="leaderMinutes">fără întârzieri</p></article>
+        <article class="glass-panel"><span class="stat-no">03</span><small>PÂNĂ LA BERE</small><strong id="remainingMinutes">60 min</strong><p>și ne vedem în weekend</p></article>
+      </div>
+      <section class="entries-section">
+        <div class="section-heading"><div><p class="eyebrow">JURNALUL DIMINEȚILOR</p><h2>Picătură cu picătură.</h2></div><button class="round-add" type="button" data-open-add aria-label="Adaugă întârziere">+</button></div>
+        <div class="entries-list glass-panel" id="entriesList"></div>
+      </section>
+      <section class="weekend-card glass-panel" id="weekendCard">
+        <div class="weekend-number">WEEK<br /><b>END</b></div><div><p class="eyebrow">MIZA SĂPTĂMÂNII</p><h2 id="weekendTitle">Mai avem până la bere.</h2><p id="weekendCopy">Halba se umple cu fiecare minut de întârziere. La 60 de minute, planul de weekend este activat.</p></div><div class="weekend-lock" id="weekendLock">🔒</div>
+      </section>
+    </section>
+    <section class="view" data-view="istoric">
+      <div class="history-hero"><p class="eyebrow">ARHIVĂ SĂPTĂMÂNALĂ</p><h1>Berile <em>câștigate.</em></h1><p>Istoricul rămâne salvat chiar când începe o săptămână nouă.</p></div><div class="history-grid" id="historyGrid"></div>
+    </section>
+  </main>
+  <footer><span>HALBA ÎNTÂRZIERILOR</span><p>Făcută pentru dimineți târzii și weekenduri bune.</p><small>Date salvate local • PWA</small></footer>
+  <dialog id="lateDialog" class="modal"><form id="lateForm" method="dialog"><div class="modal-head"><div><p class="eyebrow" id="formEyebrow">UN STROP ÎN PLUS</p><h2 id="formTitle">Adaugă întârzierea</h2></div><button class="close-button" value="cancel" aria-label="Închide">×</button></div><input type="hidden" id="entryId" /><label>Nume și prenume<input id="nameInput" type="text" required maxlength="60" placeholder="Ex: Valeriu Svetlicenco" autocomplete="name" /></label><div class="form-row"><label>Câte minute?<input id="minutesInput" type="number" min="1" max="180" required inputmode="numeric" /></label><label>Data<input id="dateInput" type="date" required /></label></div><label>Motiv <span>(opțional)</span><input id="reasonInput" type="text" maxlength="80" placeholder="Trafic, alarma, cafeaua…" /></label><div class="quick-minutes"><button type="button" data-minutes="5">+5</button><button type="button" data-minutes="10">+10</button><button type="button" data-minutes="15">+15</button><button type="button" data-minutes="30">+30</button></div><button class="primary-button full" type="submit">Toarnă în halbă</button></form></dialog>
+  <dialog id="deleteDialog" class="modal mini-modal"><form method="dialog"><div class="warning">!</div><h2>Ștergem întârzierea?</h2><p>Minutele vor fi scoase imediat din halbă.</p><div class="dialog-actions"><button class="ghost-button" value="cancel">Renunță</button><button class="primary-button red-button" id="confirmDelete" value="default">Șterge</button></div></form></dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"><b>✓</b><span></span></div>
+  <script src="./app.js" defer></script>
+</body>
 </html>
