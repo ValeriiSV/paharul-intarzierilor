@@ -1,0 +1,14 @@
+{
+  "name": "Paharul întârzierilor",
+  "short_name": "Paharul",
+  "description": "Un tracker prietenos al întârzierilor pentru echipă.",
+  "lang": "ro",
+  "start_url": "./#acasa",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f2e9",
+  "theme_color": "#f6f2e9",
+  "icons": [
+    { "src": "./assets/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
