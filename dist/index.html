@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="ro">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f7f4ed" />
+    <meta name="description" content="Paharul întârzierilor — un tracker prietenos pentru echipă." />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./assets/icon.svg" />
+    <link rel="stylesheet" href="./styles.css" />
+    <title>Paharul întârzierilor</title>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#acasa" aria-label="Paharul întârzierilor, acasă">
+          <span class="brand-mark" aria-hidden="true">P</span>
+          <span><strong>Paharul</strong><small>întârzierilor</small></span>
+        </a>
+        <div class="topbar-actions">
+          <div class="status-pill"><i></i><span>Luna în curs</span></div>
+          <button class="icon-button" id="themeToggle" type="button" aria-label="Schimbă tema">
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.6-.06-1.18-.17-1.74A7 7 0 0 1 13.74 3.17 9 9 0 0 0 12 3Z"/></svg>
+          </button>
+          <button class="avatar-button" type="button" data-open-admin aria-label="Deschide administrarea">VL</button>
+        </div>
+      </header>
+
+      <main>
+        <section class="view active" id="view-acasa" data-view="acasa">
+          <div class="hero">
+            <div>
+              <p class="eyebrow">ECHIPA TA • <span id="monthLabel"></span></p>
+              <h1>Micile întârzieri,<br /><em>la vedere.</em></h1>
+              <p class="hero-copy">Un mod prietenos de a ține evidența timpului. Fiecare minut umple paharul — fără supărare, doar transparență.</p>
+            </div>
+            <div class="hero-actions">
+              <button class="primary-button" type="button" data-open-add>
+                <span>+</span> Adaugă întârziere
+              </button>
+              <button class="secondary-button" type="button" data-open-admin>Administrează</button>
+            </div>
+          </div>
+
+          <div class="stat-strip" aria-label="Rezumat lunar">
+            <div><span class="stat-icon coral">↗</span><p><b id="totalMinutes">0</b><small>minute în total</small></p></div>
+            <div><span class="stat-icon mint">◎</span><p><b id="onTimeRate">0%</b><small>rată punctualitate</small></p></div>
+            <div><span class="stat-icon violet">♜</span><p><b id="topName">—</b><small>liderul lunii</small></p></div>
+            <div><span class="stat-icon amber">☀</span><p><b id="bestStreak">0 zile</b><small>cel mai bun streak</small></p></div>
+          </div>
+
+          <div class="section-heading">
+            <div><p class="eyebrow">PAHARELE ECHIPEI</p><h2>Cine a mai pus un strop?</h2></div>
+            <p class="scale-note"><span></span> 1 minut = 2% din pahar</p>
+          </div>
+          <div class="people-grid" id="peopleGrid"></div>
+        </section>
+
+        <section class="view" id="view-clasament" data-view="clasament">
+          <div class="page-heading">
+            <p class="eyebrow">CLASAMENT LUNAR</p>
+            <h1>Cursa pentru <em>punctualitate.</em></h1>
+            <p>Mai puține minute înseamnă un loc mai bun. Clasamentul se actualizează instant.</p>
+          </div>
+          <div class="leaderboard" id="leaderboard"></div>
+        </section>
+
+        <section class="view" id="view-istoric" data-view="istoric">
+          <div class="page-heading history-heading">
+            <div><p class="eyebrow">ARHIVĂ</p><h1>Istoricul <em>echipei.</em></h1></div>
+            <select id="historyMonth" class="select-control" aria-label="Alege luna"></select>
+          </div>
+          <div class="history-summary" id="historySummary"></div>
+          <div class="history-list" id="historyList"></div>
+        </section>
+
+        <section class="view" id="view-admin" data-view="admin">
+          <div class="page-heading admin-heading">
+            <div><p class="eyebrow">ZONĂ ADMIN</p><h1>Gestionează <em>înregistrările.</em></h1><p>Corectează sau șterge întârzierile din luna curentă.</p></div>
+            <button class="primary-button" type="button" data-open-add><span>+</span> Adaugă</button>
+          </div>
+          <div class="admin-panel">
+            <div class="admin-panel-head"><b>Întârzieri luna aceasta</b><span id="adminCount"></span></div>
+            <div class="admin-list" id="adminList"></div>
+          </div>
+          <button id="resetDemo" class="text-button danger" type="button">Restaurează datele demo</button>
+        </section>
+      </main>
+
+      <nav class="mobile-nav" aria-label="Navigare principală">
+        <a href="#acasa" data-nav="acasa"><span>⌂</span>Acasă</a>
+        <a href="#clasament" data-nav="clasament"><span>♜</span>Clasament</a>
+        <button type="button" data-open-add aria-label="Adaugă întârziere"><span>+</span></button>
+        <a href="#istoric" data-nav="istoric"><span>◷</span>Istoric</a>
+        <a href="#admin" data-nav="admin"><span>⚙</span>Admin</a>
+      </nav>
+
+      <footer><span>Paharul întârzierilor</span><p>Făcut pentru echipe care știu să râdă împreună.</p><small>v1.0 • Date salvate local</small></footer>
+    </div>
+
+    <dialog id="lateDialog" class="modal">
+      <form id="lateForm" method="dialog">
+        <div class="modal-head"><div><p class="eyebrow" id="formEyebrow">ÎNREGISTRARE NOUĂ</p><h2 id="formTitle">Adaugă o întârziere</h2></div><button class="close-button" value="cancel" aria-label="Închide">×</button></div>
+        <input type="hidden" id="entryId" />
+        <label>Cine a întârziat?<select id="personInput" required></select></label>
+        <div class="form-row">
+          <label>Câte minute?<input id="minutesInput" type="number" min="1" max="240" inputmode="numeric" required /></label>
+          <label>Data<input id="dateInput" type="date" required /></label>
+        </div>
+        <label>Motiv <span>(opțional)</span><input id="reasonInput" type="text" maxlength="80" placeholder="Ex: Trafic aglomerat" /></label>
+        <div class="quick-minutes" aria-label="Minute rapide"><button type="button" data-minutes="5">+5 min</button><button type="button" data-minutes="10">+10 min</button><button type="button" data-minutes="15">+15 min</button><button type="button" data-minutes="30">+30 min</button></div>
+        <button class="primary-button full" type="submit" value="default">Salvează întârzierea</button>
+      </form>
+    </dialog>
+
+    <dialog id="confirmDialog" class="modal small-modal">
+      <form method="dialog">
+        <div class="confirm-icon">!</div><h2>Ștergem înregistrarea?</h2><p>Această acțiune va actualiza imediat paharul și clasamentul.</p>
+        <div class="dialog-actions"><button class="secondary-button" value="cancel">Renunță</button><button class="primary-button danger-bg" id="confirmDelete" value="default">Șterge</button></div>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"><span>✓</span><p></p></div>
+    <script src="./app.js" defer></script>
+  </body>
+</html>
