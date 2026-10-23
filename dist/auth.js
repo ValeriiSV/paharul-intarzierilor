@@ -3,11 +3,9 @@ import {
   getAuth,
   GoogleAuthProvider,
   browserLocalPersistence,
-  getRedirectResult,
   onAuthStateChanged,
   setPersistence,
   signInWithPopup,
-  signInWithRedirect,
   signOut
 } from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js';
 
@@ -31,9 +29,11 @@ const logoutButton = document.querySelector('#logoutButton');
 const status = document.querySelector('#authStatus');
 
 function setBusy(busy, message = '') {
-  loginButton.disabled = busy;
-  loginButton.classList.toggle('loading', busy);
-  if (message) status.textContent = message;
+  if (loginButton) {
+    loginButton.disabled = busy;
+    loginButton.classList.toggle('loading', busy);
+  }
+  if (message && status) status.textContent = message;
 }
 
 function showUser(user) {
@@ -44,6 +44,7 @@ function showUser(user) {
   const avatar = document.querySelector('#authAvatar');
   avatar.src = user.photoURL || './assets/icon.svg';
   avatar.alt = user.displayName ? `Fotografia lui ${user.displayName}` : 'Fotografie profil';
+  setBusy(false, '');
 }
 
 function showLogin(message = 'Conectare securizată prin Firebase') {
@@ -54,38 +55,52 @@ function showLogin(message = 'Conectare securizată prin Firebase') {
 
 function friendlyError(error) {
   const messages = {
-    'auth/popup-closed-by-user': 'Fereastra Google a fost închisă.',
-    'auth/cancelled-popup-request': 'Conectarea a fost anulată.',
+    'auth/popup-closed-by-user': 'Conectarea Google a fost închisă înainte de finalizare.',
+    'auth/cancelled-popup-request': 'Conectarea a fost anulată. Încearcă din nou.',
+    'auth/popup-blocked': 'Browserul a blocat fereastra Google. Deschide aplicația direct în Safari și încearcă din nou.',
     'auth/account-exists-with-different-credential': 'Acest e-mail folosește deja altă metodă de conectare.',
-    'auth/unauthorized-domain': 'Domeniul aplicației nu este încă autorizat în Firebase.',
-    'auth/network-request-failed': 'Nu există conexiune la internet. Încearcă din nou.'
+    'auth/unauthorized-domain': 'Domeniul aplicației nu este autorizat în Firebase.',
+    'auth/network-request-failed': 'Nu există conexiune la internet. Încearcă din nou.',
+    'auth/operation-not-supported-in-this-environment': 'Acest browser nu permite conectarea Google. Deschide aplicația direct în Safari.'
   };
-  return messages[error?.code] || 'Conectarea nu a reușit. Încearcă din nou.';
+
+  if (messages[error?.code]) return messages[error.code];
+  return `Conectarea nu a reușit${error?.code ? ` (${error.code})` : ''}. Încearcă din nou.`;
 }
 
-loginButton.addEventListener('click', async () => {
-  setBusy(true, 'Se deschide contul Google…');
+async function loginWithGoogle() {
+  setBusy(true, 'Se deschide Google…');
+
   try {
+    // Firebase recommends popup auth for apps hosted outside Firebase Hosting
+    // on browsers that partition third-party storage (Safari 16.1+, Firefox,
+    // modern Chrome). It avoids the fragile redirect-result round trip.
     await setPersistence(auth, browserLocalPersistence);
-    await signInWithPopup(auth, provider);
-  } catch (error) {
-    if (error?.code === 'auth/popup-blocked' || error?.code === 'auth/operation-not-supported-in-this-environment') {
-      await signInWithRedirect(auth, provider);
-      return;
+    const result = await signInWithPopup(auth, provider);
+
+    if (result?.user) {
+      showUser(result.user);
+    } else {
+      showLogin('Conectarea Google nu s-a finalizat. Încearcă din nou.');
     }
+  } catch (error) {
+    console.error('Firebase Google sign-in failed:', error);
     showLogin(friendlyError(error));
   }
-});
+}
 
-logoutButton.addEventListener('click', async () => {
+loginButton?.addEventListener('click', loginWithGoogle);
+
+logoutButton?.addEventListener('click', async () => {
   logoutButton.disabled = true;
-  try { await signOut(auth); }
-  finally { logoutButton.disabled = false; }
+  try {
+    await signOut(auth);
+  } finally {
+    logoutButton.disabled = false;
+  }
 });
 
 onAuthStateChanged(auth, user => {
   if (user) showUser(user);
   else showLogin();
 });
-
-getRedirectResult(auth).catch(error => showLogin(friendlyError(error)));
