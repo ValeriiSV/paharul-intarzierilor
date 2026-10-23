@@ -1,5 +1,11 @@
-const STORAGE_KEY = 'halba-intarzierilor-v4';
-const LEGACY_KEY = 'halba-intarzierilor-v3';
+const STORAGE_KEY = 'halba-intarzierilor-v5';
+const RESET_MARKER = 'halba-clean-launch-v1';
+const PREVIOUS_STORAGE_KEYS = [
+  'halba-intarzierilor-v4',
+  'halba-intarzierilor-v3',
+  'halba-intarzierilor-v2',
+  'halba-intarzierilor-v1'
+];
 const GOAL = 60;
 const now = new Date();
 const iso = date => date.toISOString().slice(0, 10);
@@ -7,30 +13,26 @@ const shiftDays = days => { const d = new Date(now); d.setDate(d.getDate() + day
 const $ = (selector, parent = document) => parent.querySelector(selector);
 const $$ = (selector, parent = document) => [...parent.querySelectorAll(selector)];
 
-const demoEntries = [
-  { id:'d1', waiter:'Spicica Vitalie', latePerson:'Valeriu Svetlicenco', minutes:12, reason:'Trafic la semafor', date:shiftDays(-1) },
-  { id:'d2', waiter:'Spicica Vitalie', latePerson:'Valeriu Svetlicenco', minutes:8, reason:'Alarma a pierdut lupta', date:shiftDays(-2) },
-  { id:'d3', waiter:'Valeriu Svetlicenco', latePerson:'Spicica Vitalie', minutes:5, reason:'Cafeaua', date:shiftDays(-3) },
-  { id:'o1', waiter:'Spicica Vitalie', latePerson:'Valeriu Svetlicenco', minutes:35, reason:'Trafic', date:shiftDays(-9) },
-  { id:'o2', waiter:'Valeriu Svetlicenco', latePerson:'Spicica Vitalie', minutes:29, reason:'Parcare', date:shiftDays(-10) }
-];
+function purgePreviousTestData() {
+  if (localStorage.getItem(RESET_MARKER) === 'done') return;
+  PREVIOUS_STORAGE_KEYS.forEach(key => localStorage.removeItem(key));
+  localStorage.removeItem(STORAGE_KEY);
+  localStorage.setItem(RESET_MARKER, 'done');
+}
+
+purgePreviousTestData();
 
 let state = loadState();
 let pendingDelete = null;
 let pendingPerson = null;
 let previousMaxFill = 0;
 
-function participantsFrom(entries) {
-  return [...new Set(entries.flatMap(entry => [entry.waiter,entry.latePerson]).filter(Boolean))];
-}
 function loadState() {
   try {
-    const saved=JSON.parse(localStorage.getItem(STORAGE_KEY));
-    if(saved?.entries && saved?.participants) return saved;
-    const legacy=JSON.parse(localStorage.getItem(LEGACY_KEY));
-    if(legacy?.entries) return {entries:legacy.entries,participants:participantsFrom(legacy.entries)};
-  } catch(_) {}
-  return {entries:demoEntries.map(entry=>({...entry})),participants:['Spicica Vitalie','Valeriu Svetlicenco']};
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (Array.isArray(saved?.entries) && Array.isArray(saved?.participants)) return saved;
+  } catch (_) {}
+  return { entries: [], participants: [] };
 }
 function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}
 function escapeHTML(value=''){return String(value).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'})[c]);}
@@ -76,7 +78,7 @@ function populateParticipantSelects(){
   const waiterValue=$('#waiterInput').value,lateValue=$('#latePersonInput').value;$('#waiterInput').innerHTML=optionHTML;$('#latePersonInput').innerHTML=optionHTML;if(state.participants.includes(waiterValue))$('#waiterInput').value=waiterValue;if(state.participants.includes(lateValue))$('#latePersonInput').value=lateValue;
 }
 function addParticipant(event){event.preventDefault();const input=$('#participantName');const name=input.value.trim().replace(/\s+/g,' ');if(!name)return;if(state.participants.some(item=>item.localeCompare(name,'ro',{sensitivity:'base'})===0)){showToast('Persoana este deja în listă.');return;}state.participants.push(name);state.participants.sort((a,b)=>a.localeCompare(b,'ro'));saveState();input.value='';renderAll();showToast(`${name} a fost adăugat în echipă.`);}
-function removeParticipant(){if(state.participants.length<=2){$('#personDeleteDialog').close();showToast('Păstrează cel puțin două persoane în echipă.');return;}state.participants=state.participants.filter(name=>name!==pendingPerson);const removed=pendingPerson;pendingPerson=null;saveState();$('#personDeleteDialog').close();renderAll();showToast(`${removed} a fost scos din lista activă.`);}
+function removeParticipant(){state.participants=state.participants.filter(name=>name!==pendingPerson);const removed=pendingPerson;pendingPerson=null;saveState();$('#personDeleteDialog').close();renderAll();showToast(`${removed} a fost scos din lista activă.`);}
 
 function openForm(entry=null){if(state.participants.length<2){location.hash='#admin';showToast('Adaugă cel puțin două persoane.');return;}populateParticipantSelects();$('#entryId').value=entry?.id||'';$('#waiterInput').value=entry?.waiter&&state.participants.includes(entry.waiter)?entry.waiter:'';$('#latePersonInput').value=entry?.latePerson&&state.participants.includes(entry.latePerson)?entry.latePerson:'';$('#minutesInput').value=entry?.minutes||'';$('#dateInput').value=entry?.date||iso(now);$('#reasonInput').value=entry?.reason||'';$('#formEyebrow').textContent=entry?'CORECTEAZĂ MINUTELE':'UMPLE HALBA CORECTĂ';$('#formTitle').textContent=entry?'Editează întârzierea':'Adaugă întârzierea';$('#lateDialog').showModal();setTimeout(()=>$('#waiterInput').focus(),80);}
 function saveEntry(event){event.preventDefault();const item={id:$('#entryId').value||`e-${Date.now()}`,waiter:$('#waiterInput').value,latePerson:$('#latePersonInput').value,minutes:Math.min(180,Math.max(1,Number($('#minutesInput').value))),reason:$('#reasonInput').value.trim(),date:$('#dateInput').value};if(!item.waiter||!item.latePerson||!item.date||!item.minutes)return;if(item.waiter===item.latePerson){showToast('Alege două persoane diferite.');return;}if(!state.participants.includes(item.waiter)||!state.participants.includes(item.latePerson)){showToast('Alege persoane din lista Admin.');return;}const index=state.entries.findIndex(entry=>entry.id===item.id);if(index>=0)state.entries[index]=item;else state.entries.push(item);saveState();$('#lateDialog').close();renderAll(true);showToast(index>=0?'Întârzierea a fost corectată.':`Minutele au intrat în halba lui ${item.waiter.split(' ')[0]}.`);}
@@ -91,4 +93,4 @@ async function shareApp(){const data={title:'Halba întârzierilor',text:'Fiecar
 document.addEventListener('click',event=>{const close=event.target.closest('[data-close-dialog]');if(close)close.closest('dialog').close();if(event.target.closest('[data-open-add]'))openForm();const edit=event.target.closest('[data-edit]');if(edit)openForm(state.entries.find(entry=>entry.id===edit.dataset.edit));const remove=event.target.closest('[data-delete]');if(remove){pendingDelete=remove.dataset.delete;$('#deleteDialog').showModal();}const removePerson=event.target.closest('[data-remove-person]');if(removePerson){pendingPerson=removePerson.dataset.removePerson;$('#personDeleteDialog').showModal();}const quick=event.target.closest('[data-minutes]');if(quick)$('#minutesInput').value=quick.dataset.minutes;});
 $('#lateForm').addEventListener('submit',saveEntry);$('#participantForm').addEventListener('submit',addParticipant);$('#confirmDelete').addEventListener('click',event=>{event.preventDefault();removeEntry();});$('#confirmPersonDelete').addEventListener('click',event=>{event.preventDefault();removeParticipant();});$('#shareButton').addEventListener('click',shareApp);$('#menuToggle').addEventListener('click',()=>setMenu(!document.body.classList.contains('menu-expanded')));window.addEventListener('hashchange',syncView);
 setMenu(localStorage.getItem('halba-menu-expanded')!=='false'&&innerWidth>=700);renderAll();syncView();
-if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js'));
+if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=7'));
