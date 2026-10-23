@@ -76,7 +76,7 @@
     <section class="view" data-view="admin">
       <div class="admin-hero"><div><p class="eyebrow">ZONA ADMIN</p><h1>Echipa <em>oficială.</em></h1><p>Doar persoanele adăugate aici pot fi selectate când înregistrezi o întârziere.</p></div><span class="admin-badge">ADMIN</span></div>
       <div class="admin-layout">
-        <section class="participant-add glass-panel"><p class="eyebrow">PARTICIPANT NOU</p><h2>Adaugă un coleg</h2><p>Numele va apărea imediat în ambele liste din formular.</p><form id="participantForm"><label>Nume și prenume<input id="participantName" type="text" required maxlength="60" placeholder="Ex: Ion Popescu" autocomplete="off" /></label><button class="primary-button full" type="submit"><span>+</span> Adaugă în echipă</button></form></section>
+        <section class="participant-add glass-panel"><p class="eyebrow">PARTICIPANT NOU</p><h2>Adaugă un coleg</h2><p>Numele va apărea imediat în ambele liste din formular.</p><form id="participantForm"><label>Nume și prenume<input id="participantName" type="text" required maxlength="60" placeholder="Nume și prenume" autocomplete="off" /></label><button class="primary-button full" type="submit"><span>+</span> Adaugă în echipă</button></form></section>
         <section class="participants-panel glass-panel"><div class="participants-head"><div><p class="eyebrow">LISTA PARTICIPANȚILOR</p><h2>Echipa activă</h2></div><strong id="participantCount">0</strong></div><div class="participants-list" id="participantsList"></div></section>
       </div>
     </section>
@@ -89,6 +89,6 @@
   <dialog id="personDeleteDialog" class="modal mini-modal"><form method="dialog"><div class="warning">!</div><h2>Scoatem participantul?</h2><p>Nu va mai putea fi selectat. Înregistrările lui vechi rămân în istoric.</p><div class="dialog-actions"><button class="ghost-button" value="cancel">Renunță</button><button class="primary-button red-button" id="confirmPersonDelete" value="default">Scoate</button></div></form></dialog>
   <div class="toast" id="toast" role="status" aria-live="polite"><b>✓</b><span></span></div>
   <script type="module" src="./auth.js?v=2"></script>
-  <script src="./app.js?v=6" defer></script>
+  <script src="./app-v6.js" defer></script>
 </body>
 </html>
