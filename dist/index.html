@@ -49,14 +49,14 @@
         <div class="hero-copy">
           <p class="eyebrow"><i></i> PACTUL NOSTRU DE DIMINEAȚĂ</p>
           <h1>Fiecare cu<br /><em>halba lui.</em></h1>
-          <p>Cine așteaptă primește minutele. Dacă Spicica Vitalie te așteaptă în mașină, întârzierea ta umple halba lui. La 100%, îi datorezi berea.</p>
+          <p>Cine așteaptă primește minutele celui care întârzie. La 60 de minute, halba se umple și berea este câștigată.</p>
           <div class="hero-actions"><button class="primary-button" type="button" data-open-add><span>+</span> Adaugă minute</button><button class="ghost-button" type="button" id="shareButton">Trimite colegului</button></div>
           <div class="week-label"><span>SĂPTĂMÂNA</span><b id="weekRange">—</b></div>
         </div>
         <div class="rule-card glass-panel">
           <p class="eyebrow">REGULA E SIMPLĂ</p><h2>Cine așteaptă,<br /><em>primește berea.</em></h2>
-          <div class="rule-flow"><div><span>01</span><b>Cine a așteptat?</b><small>Spicica Vitalie</small></div><i>→</i><div><span>02</span><b>Cine a întârziat?</b><small>Tu</small></div><i>→</i><div><span>03</span><b>Câte minute?</b><small>+12 în halba lui</small></div></div>
-          <div class="rule-quote">„12 minute mai aproape de bere.”</div>
+          <div class="rule-flow"><div><span>01</span><b>Cine a așteptat?</b><small>Alege colegul</small></div><i>→</i><div><span>02</span><b>Cine a întârziat?</b><small>Alege colegul</small></div><i>→</i><div><span>03</span><b>Câte minute?</b><small>Adaugă minutele</small></div></div>
+          <div class="rule-quote">„Fiecare minut umple halba.”</div>
         </div>
       </div>
       <section class="mugs-section"><div class="section-heading"><div><p class="eyebrow">HALBELE SĂPTĂMÂNII</p><h2>Cine e mai aproape de bere?</h2></div></div><div class="mugs-grid" id="mugsGrid"></div><div class="confetti" id="confetti" aria-hidden="true"></div></section>
@@ -76,7 +76,7 @@
     <section class="view" data-view="admin">
       <div class="admin-hero"><div><p class="eyebrow">ZONA ADMIN</p><h1>Echipa <em>oficială.</em></h1><p>Doar persoanele adăugate aici pot fi selectate când înregistrezi o întârziere.</p></div><span class="admin-badge">ADMIN</span></div>
       <div class="admin-layout">
-        <section class="participant-add glass-panel"><p class="eyebrow">PARTICIPANT NOU</p><h2>Adaugă un coleg</h2><p>Numele va apărea imediat în ambele liste din formular.</p><form id="participantForm"><label>Nume și prenume<input id="participantName" type="text" required maxlength="60" placeholder="Ex: Spicica Vitalie" autocomplete="off" /></label><button class="primary-button full" type="submit"><span>+</span> Adaugă în echipă</button></form></section>
+        <section class="participant-add glass-panel"><p class="eyebrow">PARTICIPANT NOU</p><h2>Adaugă un coleg</h2><p>Numele va apărea imediat în ambele liste din formular.</p><form id="participantForm"><label>Nume și prenume<input id="participantName" type="text" required maxlength="60" placeholder="Ex: Ion Popescu" autocomplete="off" /></label><button class="primary-button full" type="submit"><span>+</span> Adaugă în echipă</button></form></section>
         <section class="participants-panel glass-panel"><div class="participants-head"><div><p class="eyebrow">LISTA PARTICIPANȚILOR</p><h2>Echipa activă</h2></div><strong id="participantCount">0</strong></div><div class="participants-list" id="participantsList"></div></section>
       </div>
     </section>
@@ -89,6 +89,6 @@
   <dialog id="personDeleteDialog" class="modal mini-modal"><form method="dialog"><div class="warning">!</div><h2>Scoatem participantul?</h2><p>Nu va mai putea fi selectat. Înregistrările lui vechi rămân în istoric.</p><div class="dialog-actions"><button class="ghost-button" value="cancel">Renunță</button><button class="primary-button red-button" id="confirmPersonDelete" value="default">Scoate</button></div></form></dialog>
   <div class="toast" id="toast" role="status" aria-live="polite"><b>✓</b><span></span></div>
   <script type="module" src="./auth.js?v=2"></script>
-  <script src="./app.js?v=5" defer></script>
+  <script src="./app.js?v=6" defer></script>
 </body>
 </html>
