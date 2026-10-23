@@ -14,7 +14,7 @@
 <body class="menu-expanded auth-pending">
   <div class="noise" aria-hidden="true"></div><div class="red-orb orb-one" aria-hidden="true"></div><div class="red-orb orb-two" aria-hidden="true"></div>
 
-  <section class="auth-gate" id="authGate" aria-live="polite">
+  <section class="auth-gate" id="authGate" aria-live="polite" hidden>
     <div class="auth-visual" aria-hidden="true"><div class="auth-halo"></div><div class="auth-mug"><div class="auth-foam"><i></i><i></i><i></i><i></i></div><div class="auth-beer"><span></span><b></b></div></div></div>
     <div class="auth-card glass-panel">
       <span class="auth-logo">H</span>
@@ -86,7 +86,7 @@
   <dialog id="deleteDialog" class="modal mini-modal"><form method="dialog"><div class="warning">!</div><h2>Ștergem întârzierea?</h2><p>Minutele vor fi scoase imediat din halbă.</p><div class="dialog-actions"><button class="ghost-button" value="cancel">Renunță</button><button class="primary-button red-button" id="confirmDelete" value="default">Șterge</button></div></form></dialog>
   <dialog id="personDeleteDialog" class="modal mini-modal"><form method="dialog"><div class="warning">!</div><h2>Scoatem participantul?</h2><p>Nu va mai putea fi selectat. Înregistrările lui vechi rămân în istoric.</p><div class="dialog-actions"><button class="ghost-button" value="cancel">Renunță</button><button class="primary-button red-button" id="confirmPersonDelete" value="default">Scoate</button></div></form></dialog>
   <div class="toast" id="toast" role="status" aria-live="polite"><b>✓</b><span></span></div>
-  <script type="module" src="./auth.js?v=3"></script>
+  <script src="./boot-v1.js"></script>
   <script src="./app-v6.js" defer></script>
 </body>
 </html>
