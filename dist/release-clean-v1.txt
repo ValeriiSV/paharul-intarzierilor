@@ -1,0 +1,3 @@
+Halba intarzierilor - clean launch v1
+Demo data removed.
+Production shell: app-v6.js + sw-v7.js
