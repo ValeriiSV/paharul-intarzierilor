@@ -1,6 +1,6 @@
 # Halba întârzierilor
 
-PWA mobile-first inspirată dintr-un pact între doi colegi. Fiecare persoană are propria halbă: cine așteaptă primește minutele celui întârziat, iar la 60 de minute câștigă berea din weekend. Aplicația păstrează datele în `localStorage`, fără backend.
+PWA mobile-first pentru gestionarea întârzierilor într-o echipă. Fiecare persoană are propria halbă: cine așteaptă primește minutele celui întârziat, iar la 60 de minute câștigă berea din weekend. Aplicația păstrează datele în `localStorage`, fără backend.
 
 **Aplicație live:** https://paharul-intarzierilor.pages.dev
 
@@ -18,7 +18,7 @@ Orice modificare publicată pe ramura `main` este livrată automat prin Cloudfla
 - motiv opțional, dată, minute rapide;
 - clasament lunar și istoric pe luni;
 - zonă admin pentru editare și ștergere;
-- date demo persistente local, temă luminoasă/închisă;
+- pornire curată, fără date demo sau participanți predefiniți;
 - manifest și service worker pentru instalare și funcționare offline.
 
 ## Rulare locală
