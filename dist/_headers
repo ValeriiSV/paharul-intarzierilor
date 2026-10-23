@@ -1,0 +1,14 @@
+/
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/index.html
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/sw-v7.js
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/auth.js
+  Cache-Control: no-cache
+
+/app-v6.js
+  Cache-Control: public, max-age=31536000, immutable
