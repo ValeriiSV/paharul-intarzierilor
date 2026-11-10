@@ -1,1 +1,111 @@
-m«ëˆ§½©buªàºg§µØ¬·ö©¦;±¨m«ë€İ…¹îš(§~)^¢‹­~)^mºŞjFëy©ÊyÚ.¶›­º˜§¶‰bë(~W§‚Øgº`İuç(uç^r‡^Šzn¶^–—b²™ZÊØb²g¬±¨Š)éºØ§¦ë_ŠWyö®–×è®Ë]Šz(ºÚn¶‹­¦ë_ŠWyö®–×è®Ë]¢ë
+const GOAL=60;
+const $=(selector,parent=document)=>parent.querySelector(selector);
+const $$=(selector,parent=document)=>[...parent.querySelectorAll(selector)];
+const iso=date=>date.toISOString().slice(0,10);
+let user=null,teamId=null,team=null,member=null,participants=[],entries=[],unsubs=[];
+let pendingDelete=null,pendingPerson=null,previousMaxFill=0,bootToken=0;
+
+function escapeHTML(value=''){return String(value).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'})[c]);}
+function initials(name=''){return name.trim().split(/\s+/).slice(0,2).map(part=>part[0]).join('').toUpperCase()||'?';}
+function mondayOf(dateLike=new Date()){const d=new Date(dateLike);d.setHours(12,0,0,0);const day=d.getDay()||7;d.setDate(d.getDate()-day+1);return d;}
+function weekKey(dateLike){return iso(mondayOf(new Date(`${dateLike}T12:00:00`)));}
+function formatDate(value){return new Intl.DateTimeFormat('ro-RO',{weekday:'short',day:'numeric',month:'short'}).format(new Date(`${value}T12:00:00`));}
+function formatWeek(key){const start=new Date(`${key}T12:00:00`),end=new Date(start);end.setDate(end.getDate()+6);const f={day:'numeric',month:'short'};return `${new Intl.DateTimeFormat('ro-RO',f).format(start)} â€” ${new Intl.DateTimeFormat('ro-RO',f).format(end)}`;}
+function participant(id){return participants.find(p=>p.id===id);}
+function activeParticipants(){return participants.filter(p=>p.active!==false).sort((a,b)=>a.name.localeCompare(b.name,'ro'));}
+function currentWeekEntries(){const key=iso(mondayOf());return entries.filter(e=>e.date&&weekKey(e.date)===key&&e.status!=='disputed');}
+function inviteLink(){return team?.inviteCode?`${location.origin}${location.pathname}?invite=${team.inviteCode}`:location.origin;}
+function isAdmin(){return member?.role==='admin';}
+
+async function boot(currentUser){
+  const token=++bootToken;cleanupSubscriptions();user=currentUser;
+  if(!user){teamId=null;team=null;member=null;participants=[];entries=[];return;}
+  setSync('Caut echipaâ€¦');
+  try{
+    const code=new URLSearchParams(location.search).get('invite');
+    const profile=await window.halbaCloud.getUserProfile(user.uid);
+    if(token!==bootToken)return;
+    if(code){
+      try{const joined=await window.halbaCloud.joinTeam(user,code);history.replaceState({},'',`${location.pathname}#acasa`);await connectTeam(joined.teamId);showToast('Ai intrat Ã®n echipÄƒ. Bun venit!');return;}
+      catch(error){if(profile?.activeTeamId){showToast(error.message||'InvitaÈ›ia nu este validÄƒ.');await connectTeam(profile.activeTeamId);return;}showTeamGate(code,error.message);return;}
+    }
+    if(profile?.activeTeamId)await connectTeam(profile.activeTeamId);else showTeamGate();
+  }catch(error){showTeamGate('',`Nu am putut Ã®ncÄƒrca echipa: ${error.message}`);}
+}
+
+function cleanupSubscriptions(){unsubs.forEach(fn=>{try{fn();}catch(_){}});unsubs=[];}
+function showTeamGate(code='',message=''){document.body.classList.remove('team-ready');$('#teamGate').hidden=false;$('#inviteCodeInput').value=(code||'').toUpperCase();$('#teamGateStatus').textContent=message|| (code?'InvitaÈ›ia este pregÄƒtitÄƒ. IntrÄƒ Ã®n echipÄƒ.':'');}
+async function connectTeam(id){
+  cleanupSubscriptions();teamId=id;$('#teamGate').hidden=true;document.body.classList.add('team-ready');setSync('Sincronizare Ã®n timp realâ€¦');
+  unsubs=window.halbaCloud.subscribeTeam(teamId,user.uid,{
+    team:value=>{team=value;if(!team){showTeamGate('','Echipa nu mai este disponibilÄƒ.');return;}$('#teamNameTop').textContent=team.name.toUpperCase();$('#teamNameAdmin').textContent=team.name;$('#inviteCode').textContent=team.inviteCode||'â€”';renderAll();},
+    member:value=>{member=value;renderPermissions();renderAll();},
+    participants:value=>{participants=value;renderAll();},
+    entries:value=>{entries=value.sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));renderAll(true);setSync('Salvat Ã®n cloud â€¢ actualizat live');},
+    error:error=>{console.error(error);setSync('Eroare de sincronizare');showToast('Nu am putut sincroniza datele.');}
+  });
+}
+
+function renderPermissions(){const admin=isAdmin();$('.admin-badge').textContent=admin?'ADMIN':'MEMBRU';$('.participant-add').hidden=!admin;const adminNav=$('[data-nav="admin"]');if(adminNav)adminNav.querySelector('.menu-label').textContent=admin?'Admin':'EchipÄƒ';}
+function setSync(text){$('#syncStatus').textContent=text;}
+
+function mugStats(list){
+  const totals={},debtors={};
+  list.forEach(entry=>{totals[entry.waiterId]=(totals[entry.waiterId]||0)+Number(entry.minutes);debtors[entry.waiterId]||={};debtors[entry.waiterId][entry.latePersonId]=(debtors[entry.waiterId][entry.latePersonId]||0)+Number(entry.minutes);});
+  const ids=new Set(activeParticipants().map(p=>p.id));list.forEach(e=>{ids.add(e.waiterId);ids.add(e.latePersonId);});
+  return [...ids].map(id=>{const p=participant(id);if(!p)return null;const total=totals[id]||0,debtor=Object.entries(debtors[id]||{}).sort((a,b)=>b[1]-a[1])[0];return{id,name:p.name,total,fill:Math.min(100,Math.round(total/GOAL*100)),debtor};}).filter(Boolean).sort((a,b)=>b.total-a.total||a.name.localeCompare(b.name,'ro'));
+}
+function mugMarkup(person){const debtor=person.debtor?participant(person.debtor[0]):null;const debtorText=debtor?`${escapeHTML(debtor.name.split(' ')[0])} Ã®i datoreazÄƒ ${person.debtor[1]} min`:'N-a aÈ™teptat pe nimeni Ã®ncÄƒ';return `<article class="person-mug-card glass-panel ${person.total>=GOAL?'won':''}"><div class="person-mug-head"><span class="person-avatar">${initials(person.name)}</span><div><h3>${escapeHTML(person.name)}</h3><small>HALBA LUI</small></div><b>${person.fill}%</b></div><div class="mini-mug-stage"><div class="mug-wrap"><div class="mug-handle"></div><div class="mug-base"></div><div class="mug"><div class="glass-shine"></div><div class="beer" style="--fill:${person.fill}%"><div class="beer-wave wave-a"></div><div class="beer-wave wave-b"></div><div class="foam"><span></span><span></span><span></span><span></span><span></span></div><i class="bubble b1"></i><i class="bubble b2"></i><i class="bubble b3"></i><i class="bubble b4"></i><i class="bubble b5"></i></div></div></div></div><div class="person-mug-foot"><strong>${person.total} <small>/ ${GOAL} min</small></strong><span>${debtorText}</span></div>${person.total>=GOAL?'<div class="personal-win">ğŸ» BERE CÃ‚È˜TIGATÄ‚</div>':''}</article>`;}
+
+function renderAll(animate=false){
+  const weekEntries=currentWeekEntries(),mugs=mugStats(weekEntries),leader=mugs[0],nextBeer=mugs.filter(m=>m.total<GOAL).sort((a,b)=>b.total-a.total)[0],winners=mugs.filter(m=>m.total>=GOAL),maxFill=Math.max(0,...mugs.map(m=>m.fill));
+  $('#weekRange').textContent=formatWeek(iso(mondayOf())).toUpperCase();
+  $('#mugsGrid').innerHTML=mugs.length?mugs.map(mugMarkup).join(''):'<div class="empty glass-panel"><b>Nicio halbÄƒ Ã®ncÄƒ.</b><span>Adminul adaugÄƒ participanÈ›ii, apoi puteÈ›i Ã®ncepe.</span></div>';
+  $('#entryCount').textContent=weekEntries.length;$('#leaderName').textContent=leader?.name.split(' ')[0]||'â€”';$('#leaderMinutes').textContent=leader?`${leader.total} minute Ã®n halba lui`:'fÄƒrÄƒ Ã®ntÃ¢rzieri';$('#remainingMinutes').textContent=nextBeer?`${GOAL-nextBeer.total} min`:(winners.length?'0 min':'â€”');
+  $('#weekendCard').classList.toggle('unlocked',winners.length>0);$('#weekendLock').textContent=winners.length?'ğŸ»':'ğŸ”’';$('#weekendTitle').textContent=winners.length?`${winners.map(w=>w.name.split(' ')[0]).join(' È™i ')} ${winners.length>1?'È™i-au':'È™i-a'} cÃ¢È™tigat berea!`:'Mai avem pÃ¢nÄƒ la bere.';$('#weekendCopy').textContent=winners.length?'O halbÄƒ s-a umplut. AlegeÈ›i locul È™i ora pentru Ã®ntÃ¢lnirea din weekend.':nextBeer?`Mai sunt ${GOAL-nextBeer.total} minute pÃ¢nÄƒ la urmÄƒtoarea bere oficialÄƒ.`:'AdaugÄƒ participanÈ›ii È™i prima Ã®ntÃ¢rziere.';
+  $('#entriesList').innerHTML=weekEntries.length?weekEntries.map(entryRow).join(''):'<div class="empty"><b>Toate halbele sunt goale.</b><span>Orice coleg conectat poate adÄƒuga prima Ã®ntÃ¢rziere.</span></div>';
+  renderHistory();renderParticipants();populateParticipantSelects();
+  if(animate&&maxFill>=100&&previousMaxFill<100)launchConfetti();previousMaxFill=maxFill;
+}
+
+function entryRow(entry){
+  const waiter=participant(entry.waiterId),late=participant(entry.latePersonId);if(!waiter||!late)return'';
+  const canManage=isAdmin()||entry.createdBy===user?.uid;const canConfirm=isAdmin()||late.linkedUid===user?.uid;const status=entry.status||'pending';const statusLabel={pending:'AÈ˜TEAPTÄ‚ CONFIRMARE',confirmed:'CONFIRMATÄ‚',disputed:'CONTESTATÄ‚'}[status];const reactions=Object.values(entry.reactions||{});const counts=reactions.reduce((m,e)=>{m[e]=(m[e]||0)+1;return m;},{});
+  return `<article class="entry-row cloud-entry"><span class="entry-avatar">${initials(waiter.name)}</span><div class="entry-person"><b>${escapeHTML(waiter.name)}</b><span>L-a aÈ™teptat pe ${escapeHTML(late.name)}${entry.reason?` â€¢ ${escapeHTML(entry.reason)}`:''}</span><small class="entry-meta">AdÄƒugat de ${escapeHTML(entry.createdByName||'membru')} â€¢ <i class="status-${status}">${statusLabel}</i></small><div class="reaction-bar">${['ğŸº','ğŸ˜´','ğŸš—','â°'].map(e=>`<button data-react="${entry.id}" data-emoji="${e}" title="ReacÈ›ioneazÄƒ">${e}${counts[e]?` <b>${counts[e]}</b>`:''}</button>`).join('')}</div></div><time class="entry-date">${formatDate(entry.date)}</time><strong class="entry-minutes">+${entry.minutes} min</strong><div class="entry-actions">${canConfirm&&status==='pending'?`<button class="icon-btn confirm-btn" data-status="confirmed" data-entry="${entry.id}" title="ConfirmÄƒ">âœ“</button><button class="icon-btn" data-status="disputed" data-entry="${entry.id}" title="ContestÄƒ">!</button>`:''}${canManage?`<button class="icon-btn" data-edit="${entry.id}" aria-label="EditeazÄƒ">âœ</button><button class="icon-btn" data-delete="${entry.id}" aria-label="È˜terge">Ã—</button>`:''}</div></article>`;
+}
+
+function renderParticipants(){
+  const list=activeParticipants();$('#participantCount').textContent=list.length;
+  $('#participantsList').innerHTML=list.length?list.map((p,index)=>`<article class="participant-row"><span class="person-avatar">${initials(p.name)}</span><div><b>${escapeHTML(p.name)}</b><small>${p.linkedUid?'Cont Google conectat':'Participant manual'} â€¢ halba #${String(index+1).padStart(2,'0')}</small></div><span class="active-chip"><i></i> ACTIV</span>${isAdmin()?`<button class="icon-btn" data-remove-person="${p.id}" aria-label="Scoate ${escapeHTML(p.name)}">Ã—</button>`:'<span></span>'}</article>`).join(''):'<div class="empty"><b>Lista este goalÄƒ.</b><span>Adminul adaugÄƒ participanÈ›ii.</span></div>';
+}
+function renderHistory(){const groups=entries.reduce((map,e)=>{if(!e.date||e.status==='disputed')return map;const key=weekKey(e.date);(map[key]||=[]).push(e);return map;},{}),current=iso(mondayOf());const weeks=Object.entries(groups).filter(([key])=>key!==current).sort((a,b)=>b[0].localeCompare(a[0]));$('#historyGrid').innerHTML=weeks.length?weeks.map(([key,list])=>{const mugs=mugStats(list),leader=mugs[0],won=mugs.filter(m=>m.total>=GOAL);return `<article class="history-card glass-panel"><div class="history-top"><small>${formatWeek(key)}</small><span class="result">${won.length?'BERE CÃ‚È˜TIGATÄ‚':'HALBE NEUMPLUTE'}</span></div><strong>${leader?`${escapeHTML(leader.name.split(' ')[0])}: ${leader.total} min`:'0 min'}</strong><p>${list.length} Ã®nregistrÄƒri â€¢ sincronizate Ã®n cloud</p></article>`;}).join(''):'<div class="empty glass-panel"><b>ÃncÄƒ nu avem istoric.</b><span>Prima sÄƒptÄƒmÃ¢nÄƒ se scrie chiar acum.</span></div>';}
+function populateParticipantSelects(){const option='<option value="">SelecteazÄƒ persoana</option>'+activeParticipants().map(p=>`<option value="${p.id}">${escapeHTML(p.name)}</option>`).join('');const w=$('#waiterInput').value,l=$('#latePersonInput').value;$('#waiterInput').innerHTML=option;$('#latePersonInput').innerHTML=option;if(participant(w)?.active!==false)$('#waiterInput').value=w;if(participant(l)?.active!==false)$('#latePersonInput').value=l;}
+
+function openForm(entry=null){if(activeParticipants().length<2){location.hash='#admin';showToast('Adminul trebuie sÄƒ adauge cel puÈ›in douÄƒ persoane.');return;}populateParticipantSelects();$('#entryId').value=entry?.id||'';$('#waiterInput').value=entry?.waiterId||'';$('#latePersonInput').value=entry?.latePersonId||'';$('#minutesInput').value=entry?.minutes||'';$('#dateInput').value=entry?.date||iso(new Date());$('#reasonInput').value=entry?.reason||'';$('#formTitle').textContent=entry?'EditeazÄƒ Ã®ntÃ¢rzierea':'AdaugÄƒ Ã®ntÃ¢rzierea';$('#lateDialog').showModal();}
+async function saveEntry(event){event.preventDefault();const waiterId=$('#waiterInput').value,latePersonId=$('#latePersonInput').value;if(waiterId===latePersonId){showToast('Alege douÄƒ persoane diferite.');return;}const data={waiterId,latePersonId,waiterName:participant(waiterId)?.name||'',latePersonName:participant(latePersonId)?.name||'',minutes:Math.min(180,Math.max(1,Number($('#minutesInput').value))),date:$('#dateInput').value,reason:$('#reasonInput').value.trim()};if(!data.waiterId||!data.latePersonId||!data.date)return;const id=$('#entryId').value;setSync('Se salveazÄƒâ€¦');try{await window.halbaCloud.saveEntry(teamId,data,id||null);$('#lateDialog').close();showToast(id?'ÃntÃ¢rzierea a fost corectatÄƒ.':`Minutele au intrat Ã®n halba lui ${data.waiterName.split(' ')[0]}.`);}catch(error){showToast(`Nu s-a salvat: ${error.message}`);setSync('Eroare la salvare');}}
+async function addParticipant(event){event.preventDefault();if(!isAdmin()){showToast('Doar adminul poate adÄƒuga persoane.');return;}const name=$('#participantName').value.trim().replace(/\s+/g,' ');if(!name)return;if(activeParticipants().some(p=>p.name.localeCompare(name,'ro',{sensitivity:'base'})===0)){showToast('Persoana este deja Ã®n listÄƒ.');return;}try{await window.halbaCloud.addParticipant(teamId,name);$('#participantName').value='';showToast(`${name} a fost adÄƒugat.`);}catch(error){showToast(`Nu s-a adÄƒugat: ${error.message}`);}}
+async function removeEntry(){try{await window.halbaCloud.deleteEntry(teamId,pendingDelete);$('#deleteDialog').close();showToast('ÃntÃ¢rzierea a fost È™tearsÄƒ.');}catch(error){showToast(`Nu s-a È™ters: ${error.message}`);}pendingDelete=null;}
+async function removeParticipant(){try{await window.halbaCloud.setParticipantActive(teamId,pendingPerson,false);$('#personDeleteDialog').close();showToast('Participantul a fost scos din lista activÄƒ.');}catch(error){showToast(`Nu s-a actualizat: ${error.message}`);}pendingPerson=null;}
+
+async function createTeam(event){event.preventDefault();const name=$('#teamNameInput').value.trim();setTeamStatus('Se creeazÄƒ echipaâ€¦');try{const result=await window.halbaCloud.createTeam(user,name);let migrated=0;try{const legacy=JSON.parse(localStorage.getItem('halba-intarzierilor-v4'));if(legacy&&!localStorage.getItem(`halba-migrated-${result.teamId}`)){migrated=await window.halbaCloud.importLegacy(result.teamId,legacy);localStorage.setItem(`halba-migrated-${result.teamId}`,'1');}}catch(_){}await connectTeam(result.teamId);showToast(migrated?`Echipa este gata. Am mutat ${migrated} Ã®ntÃ¢rzieri Ã®n cloud.`:'Echipa este gata. Trimite linkul colegului!');}catch(error){setTeamStatus(error.message||'Nu am putut crea echipa.');}}
+async function joinTeam(event){event.preventDefault();setTeamStatus('Verific invitaÈ›iaâ€¦');try{const result=await window.halbaCloud.joinTeam(user,$('#inviteCodeInput').value);history.replaceState({},'',`${location.pathname}#acasa`);await connectTeam(result.teamId);showToast('Ai intrat Ã®n echipÄƒ!');}catch(error){setTeamStatus(error.message||'Nu am putut intra Ã®n echipÄƒ.');}}
+function setTeamStatus(message){$('#teamGateStatus').textContent=message;}
+async function shareInvite(){if(!team?.inviteCode){showToast('Echipa se Ã®ncarcÄƒ.');return;}const data={title:`InvitaÈ›ie Ã®n ${team.name}`,text:`IntrÄƒ Ã®n echipa mea â€${team.name}â€ din Halba Ã®ntÃ¢rzierilor.`,url:inviteLink()};try{if(navigator.share)await navigator.share(data);else{await navigator.clipboard.writeText(data.url);showToast('Linkul de invitaÈ›ie a fost copiat!');}}catch(_){} }
+
+function showToast(message){const toast=$('#toast');$('span',toast).textContent=message;toast.classList.add('show');clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>toast.classList.remove('show'),3200);}
+function launchConfetti(){const root=$('#confetti');root.innerHTML=Array.from({length:42},()=>`<i style="--x:${(Math.random()-.5)*700}px;--y:${80+Math.random()*420}px;left:${12+Math.random()*76}%;animation-delay:${Math.random()*.35}s"></i>`).join('');setTimeout(()=>root.innerHTML='',2300);}
+function setMenu(expanded){document.body.classList.toggle('menu-expanded',expanded);$('#menuToggle').setAttribute('aria-expanded',String(expanded));localStorage.setItem('halba-menu-expanded',String(expanded));}
+function syncView(){const allowed=['acasa','istoric','admin'],raw=location.hash.replace('#',''),view=allowed.includes(raw)?raw:'acasa';$$('.view').forEach(node=>node.classList.toggle('active',node.dataset.view===view));$$('[data-nav]').forEach(node=>node.classList.toggle('active',node.dataset.nav===view));$('#pageTitle').textContent={acasa:'Halbele sÄƒptÄƒmÃ¢nii',istoric:'Istoricul echipei',admin:isAdmin()?'Administrare participanÈ›i':'Echipa È™i invitaÈ›ia'}[view];if(innerWidth<700)setMenu(false);window.scrollTo({top:0,behavior:'smooth'});}
+
+document.addEventListener('click',async event=>{
+  const close=event.target.closest('[data-close-dialog]');if(close)close.closest('dialog').close();if(event.target.closest('[data-open-add]'))openForm();
+  const edit=event.target.closest('[data-edit]');if(edit)openForm(entries.find(e=>e.id===edit.dataset.edit));
+  const remove=event.target.closest('[data-delete]');if(remove){pendingDelete=remove.dataset.delete;$('#deleteDialog').showModal();}
+  const removePerson=event.target.closest('[data-remove-person]');if(removePerson){pendingPerson=removePerson.dataset.removePerson;$('#personDeleteDialog').showModal();}
+  const quick=event.target.closest('[data-minutes]');if(quick)$('#minutesInput').value=quick.dataset.minutes;
+  const statusBtn=event.target.closest('[data-status]');if(statusBtn){try{await window.halbaCloud.setEntryStatus(teamId,statusBtn.dataset.entry,statusBtn.dataset.status);showToast(statusBtn.dataset.status==='confirmed'?'ÃntÃ¢rzierea a fost confirmatÄƒ.':'ÃntÃ¢rzierea a fost contestatÄƒ.');}catch(error){showToast(error.message);}}
+  const react=event.target.closest('[data-react]');if(react){try{await window.halbaCloud.react(teamId,react.dataset.react,react.dataset.emoji);}catch(error){showToast(error.message);}}
+});
+$('#lateForm').addEventListener('submit',saveEntry);$('#participantForm').addEventListener('submit',addParticipant);$('#createTeamForm').addEventListener('submit',createTeam);$('#joinTeamForm').addEventListener('submit',joinTeam);$('#confirmDelete').addEventListener('click',event=>{event.preventDefault();removeEntry();});$('#confirmPersonDelete').addEventListener('click',event=>{event.preventDefault();removeParticipant();});$('#shareButton').addEventListener('click',shareInvite);$('#copyInvite').addEventListener('click',shareInvite);$('#menuToggle').addEventListener('click',()=>setMenu(!document.body.classList.contains('menu-expanded')));window.addEventListener('hashchange',syncView);window.addEventListener('halba-auth-ready',event=>boot(event.detail.user));
+setMenu(localStorage.getItem('halba-menu-expanded')!=='false'&&innerWidth>=700);syncView();if(window.halbaCurrentUser!==undefined)boot(window.halbaCurrentUser);
+if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=11'));

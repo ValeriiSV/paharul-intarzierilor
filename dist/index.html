@@ -1,1 +1,108 @@
-m�눧��bu��g��ج���u�a�iT��m��݅��(�~)^���~)^m��jF�y���y�.��������b��(~W���g�`�u�(u�^r�^�zn�^��b��Z��b�g����)�ا��_�W�y������]�z(��n�����_�W�y������]��
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0b0d" />
+  <meta name="description" content="Halba întârzierilor — fiecare coleg are halba lui." />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="./assets/icon.svg" />
+  <link rel="stylesheet" href="./styles.css?v=11" />
+  <title>Halba întârzierilor</title>
+</head>
+<body class="menu-expanded auth-pending">
+  <div class="noise" aria-hidden="true"></div><div class="red-orb orb-one" aria-hidden="true"></div><div class="red-orb orb-two" aria-hidden="true"></div>
+
+  <section class="auth-gate" id="authGate" aria-live="polite">
+    <div class="auth-visual" aria-hidden="true"><div class="auth-halo"></div><div class="auth-mug"><div class="auth-foam"><i></i><i></i><i></i><i></i></div><div class="auth-beer"><span></span><b></b></div></div></div>
+    <div class="auth-card glass-panel">
+      <span class="auth-logo">H</span>
+      <p class="eyebrow">ACCESUL ECHIPEI</p>
+      <h1>Intră în<br /><em>gașcă.</em></h1>
+      <p>Conectează-te cu Google pentru a vedea halbele, întârzierile și pagina de administrare.</p>
+      <button class="google-button" id="googleSignIn" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M21.6 12.2c0-.7-.1-1.4-.2-2H12v3.9h5.4a4.6 4.6 0 0 1-2 3v2.5h3.2c1.9-1.7 3-4.3 3-7.4Z"/><path fill="#34A853" d="M12 22c2.7 0 5-.9 6.6-2.4l-3.2-2.5c-.9.6-2 1-3.4 1a5.8 5.8 0 0 1-5.4-4H3.3v2.6A10 10 0 0 0 12 22Z"/><path fill="#FBBC05" d="M6.6 14.1a6 6 0 0 1 0-4.2V7.3H3.3a10 10 0 0 0 0 9.4l3.3-2.6Z"/><path fill="#EA4335" d="M12 5.9c1.5 0 2.8.5 3.8 1.5l2.9-2.8A9.7 9.7 0 0 0 3.3 7.3l3.3 2.6A5.8 5.8 0 0 1 12 5.9Z"/></svg><span>Continuă cu Google</span></button>
+      <div class="auth-status" id="authStatus">Conectare securizată prin Firebase</div>
+      <small>Prin conectare, contul Google este folosit doar pentru identificare în aplicație.</small>
+    </div>
+  </section>
+
+  <section class="team-gate" id="teamGate" hidden>
+    <div class="team-gate-card glass-panel">
+      <span class="auth-logo">H</span><p class="eyebrow">ECHIPA TA</p><h1>Cu cine bei<br /><em>berea?</em></h1>
+      <p class="team-intro">Creează o echipă și trimite linkul colegului sau intră într-o echipă folosind invitația primită.</p>
+      <div class="team-choice">
+        <form id="createTeamForm"><h2>Creează echipa</h2><label>Numele echipei<input id="teamNameInput" required maxlength="50" placeholder="Ex: Gașca de dimineață" /></label><button class="primary-button full" type="submit"><span>+</span> Creează și continuă</button></form>
+        <div class="choice-or">SAU</div>
+        <form id="joinTeamForm"><h2>Intră prin invitație</h2><label>Codul primit<input id="inviteCodeInput" required maxlength="8" placeholder="Ex: BERE24" autocapitalize="characters" /></label><button class="ghost-button full" type="submit">Intră în echipă →</button></form>
+      </div>
+      <div class="team-gate-status" id="teamGateStatus"></div>
+    </div>
+  </section>
+
+  <aside class="app-menu glass-panel" id="appMenu">
+    <div class="menu-brand"><span class="brand-icon">H</span><span class="menu-label"><strong>HALBA</strong><small>ÎNTÂRZIERILOR</small></span></div>
+    <button class="menu-toggle" id="menuToggle" type="button" aria-label="Restrânge meniul" aria-expanded="true"><i></i><i></i><i></i></button>
+    <nav class="side-nav" aria-label="Meniu principal">
+      <a href="#acasa" data-nav="acasa"><span class="nav-icon">⌂</span><span class="menu-label">Halbele</span><b></b></a>
+      <a href="#istoric" data-nav="istoric"><span class="nav-icon">◷</span><span class="menu-label">Istoric</span><b></b></a>
+      <a href="#admin" data-nav="admin"><span class="nav-icon">◇</span><span class="menu-label">Admin</span><b></b></a>
+    </nav>
+    <div class="menu-account"><img id="authAvatar" alt="" /><span class="menu-label"><b id="authName">Cont Google</b><small id="authEmail">conectat</small></span><button id="logoutButton" type="button" aria-label="Deconectare" title="Deconectare">↪</button></div>
+  </aside>
+
+  <header class="content-topbar glass-panel">
+    <div><small id="teamNameTop">ECHIPA SE ÎNCARCĂ</small><strong id="pageTitle">Halbele săptămânii</strong></div>
+    <button class="header-add" type="button" data-open-add><span>+</span> Întârziere</button>
+  </header>
+
+  <main>
+    <section class="view active" data-view="acasa">
+      <div class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow"><i></i> PACTUL NOSTRU DE DIMINEAȚĂ</p>
+          <h1>Fiecare cu<br /><em>halba lui.</em></h1>
+          <p>Cine așteaptă primește minutele. Dacă Spicica Vitalie te așteaptă în mașină, întârzierea ta umple halba lui. La 100%, îi datorezi berea.</p>
+          <div class="hero-actions"><button class="primary-button" type="button" data-open-add><span>+</span> Adaugă minute</button><button class="ghost-button" type="button" id="shareButton">Trimite colegului</button></div>
+          <div class="week-label"><span>SĂPTĂMÂNA</span><b id="weekRange">—</b></div>
+        </div>
+        <div class="rule-card glass-panel">
+          <p class="eyebrow">REGULA E SIMPLĂ</p><h2>Cine așteaptă,<br /><em>primește berea.</em></h2>
+          <div class="rule-flow"><div><span>01</span><b>Cine a așteptat?</b><small>Spicica Vitalie</small></div><i>→</i><div><span>02</span><b>Cine a întârziat?</b><small>Tu</small></div><i>→</i><div><span>03</span><b>Câte minute?</b><small>+12 în halba lui</small></div></div>
+          <div class="rule-quote">„12 minute mai aproape de bere.”</div>
+        </div>
+      </div>
+      <section class="mugs-section"><div class="section-heading"><div><p class="eyebrow">HALBELE SĂPTĂMÂNII</p><h2>Cine e mai aproape de bere?</h2></div></div><div class="mugs-grid" id="mugsGrid"></div><div class="confetti" id="confetti" aria-hidden="true"></div></section>
+      <div class="stats-grid">
+        <article class="glass-panel"><span class="stat-no">01</span><small>TOTAL ÎNTÂRZIERI</small><strong id="entryCount">0</strong><p>săptămâna aceasta</p></article>
+        <article class="glass-panel"><span class="stat-no">02</span><small>CEA MAI PLINĂ HALBĂ</small><strong id="leaderName">—</strong><p id="leaderMinutes">fără minute</p></article>
+        <article class="glass-panel"><span class="stat-no">03</span><small>URMĂTOAREA BERE</small><strong id="remainingMinutes">60 min</strong><p>până la prima halbă plină</p></article>
+      </div>
+      <section class="entries-section"><div class="section-heading"><div><p class="eyebrow">JURNALUL DIMINEȚILOR</p><h2>Picătură cu picătură.</h2></div><button class="round-add" type="button" data-open-add aria-label="Adaugă întârziere">+</button></div><div class="entries-list glass-panel" id="entriesList"></div></section>
+      <section class="weekend-card glass-panel" id="weekendCard"><div class="weekend-number">WEEK<br /><b>END</b></div><div><p class="eyebrow">MIZA SĂPTĂMÂNII</p><h2 id="weekendTitle">Halbele încă se umplu.</h2><p id="weekendCopy">Fiecare coleg are propria halbă. Prima care ajunge la 60 de minute activează berea din weekend.</p></div><div class="weekend-lock" id="weekendLock">🔒</div></section>
+    </section>
+
+    <section class="view" data-view="istoric">
+      <div class="history-hero"><p class="eyebrow">ARHIVĂ SĂPTĂMÂNALĂ</p><h1>Berile <em>câștigate.</em></h1><p>Istoricul rămâne salvat chiar când începe o săptămână nouă.</p></div><div class="history-grid" id="historyGrid"></div>
+    </section>
+
+    <section class="view" data-view="admin">
+      <div class="admin-hero"><div><p class="eyebrow">ZONA ADMIN</p><h1>Echipa <em>oficială.</em></h1><p>Doar persoanele adăugate aici pot fi selectate când înregistrezi o întârziere.</p></div><span class="admin-badge">ADMIN</span></div>
+      <section class="invite-panel glass-panel"><div><p class="eyebrow">INVITĂ COLEGII</p><h2 id="teamNameAdmin">Echipa ta</h2><p>Trimite linkul. După conectarea cu Google, colegul intră direct în aceeași echipă.</p></div><div class="invite-code"><small>CODUL ECHIPEI</small><strong id="inviteCode">—</strong></div><button class="primary-button" id="copyInvite" type="button">Copiază linkul</button></section>
+      <div class="admin-layout">
+        <section class="participant-add glass-panel"><p class="eyebrow">PARTICIPANT NOU</p><h2>Adaugă un coleg</h2><p>Numele va apărea imediat în ambele liste din formular.</p><form id="participantForm"><label>Nume și prenume<input id="participantName" type="text" required maxlength="60" placeholder="Ex: Spicica Vitalie" autocomplete="off" /></label><button class="primary-button full" type="submit"><span>+</span> Adaugă în echipă</button></form></section>
+        <section class="participants-panel glass-panel"><div class="participants-head"><div><p class="eyebrow">LISTA PARTICIPANȚILOR</p><h2>Echipa activă</h2></div><strong id="participantCount">0</strong></div><div class="participants-list" id="participantsList"></div></section>
+      </div>
+    </section>
+  </main>
+
+  <footer><span>HALBA ÎNTÂRZIERILOR</span><p>Făcută pentru dimineți târzii și weekenduri bune.</p><small id="syncStatus">Se conectează la cloud…</small></footer>
+
+  <dialog id="lateDialog" class="modal"><form id="lateForm" method="dialog"><div class="modal-head"><div><p class="eyebrow" id="formEyebrow">UMPLE HALBA CORECTĂ</p><h2 id="formTitle">Adaugă întârzierea</h2></div><button class="close-button" type="button" data-close-dialog aria-label="Închide">×</button></div><input type="hidden" id="entryId" /><div class="form-row"><label>Cine a așteptat?<select id="waiterInput" required></select></label><label>Cine a întârziat?<select id="latePersonInput" required></select></label></div><div class="form-row"><label>Câte minute?<input id="minutesInput" type="number" min="1" max="180" required inputmode="numeric" /></label><label>Data<input id="dateInput" type="date" required /></label></div><label>Motiv <span>(opțional)</span><input id="reasonInput" type="text" maxlength="80" placeholder="Trafic, alarma, cafeaua…" /></label><div class="quick-minutes"><button type="button" data-minutes="5">+5</button><button type="button" data-minutes="10">+10</button><button type="button" data-minutes="15">+15</button><button type="button" data-minutes="30">+30</button></div><button class="primary-button full" type="submit">Toarnă în halba celui care a așteptat</button><p class="form-note">Participanții se gestionează din pagina Admin.</p></form></dialog>
+  <dialog id="deleteDialog" class="modal mini-modal"><form method="dialog"><div class="warning">!</div><h2>Ștergem întârzierea?</h2><p>Minutele vor fi scoase imediat din halbă.</p><div class="dialog-actions"><button class="ghost-button" value="cancel">Renunță</button><button class="primary-button red-button" id="confirmDelete" value="default">Șterge</button></div></form></dialog>
+  <dialog id="personDeleteDialog" class="modal mini-modal"><form method="dialog"><div class="warning">!</div><h2>Scoatem participantul?</h2><p>Nu va mai putea fi selectat. Înregistrările lui vechi rămân în istoric.</p><div class="dialog-actions"><button class="ghost-button" value="cancel">Renunță</button><button class="primary-button red-button" id="confirmPersonDelete" value="default">Scoate</button></div></form></dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"><b>✓</b><span></span></div>
+  <script type="module" src="./auth.js?v=11"></script>
+  <script src="./app.js?v=11" defer></script>
+</body>
+</html>

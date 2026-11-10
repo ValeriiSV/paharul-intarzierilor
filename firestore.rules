@@ -1,1 +1,74 @@
-m«ëˆ§½©buªàºg§µø«zËh­êî•ë±¨m«ë€İ…¹îš(§~)^¢‹­~)^mºŞjFëy©ÊyÚ.¶›­º˜§¶‰bë(~W§‚Øgº`İuç(uç^r‡^Šzn¶^–—b²™ZÊØb²g¬±¨Š)éºØ§¦ë_ŠWyö®–×è®Ë]Šz(ºÚn¶‹­¦ë_ŠWyö®–×è®Ë]¢ë
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+    function isMember(teamId) {
+      return signedIn() && exists(/databases/$(database)/documents/teams/$(teamId)/members/$(request.auth.uid));
+    }
+    function isAdmin(teamId) {
+      return isMember(teamId) && get(/databases/$(database)/documents/teams/$(teamId)/members/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    match /users/{userId} {
+      allow read, create, update: if signedIn() && request.auth.uid == userId;
+      allow delete: if false;
+    }
+
+    match /invites/{code} {
+      allow get: if signedIn();
+      allow list: if false;
+      allow create: if signedIn()
+        && request.resource.data.ownerUid == request.auth.uid
+        && isAdmin(request.resource.data.teamId);
+      allow update, delete: if signedIn() && isAdmin(resource.data.teamId);
+    }
+
+    match /teams/{teamId} {
+      allow create: if signedIn() && request.resource.data.createdBy == request.auth.uid;
+      allow read: if isMember(teamId) || (signedIn() && resource.data.createdBy == request.auth.uid);
+      allow update: if isAdmin(teamId);
+      allow delete: if false;
+
+      match /members/{memberId} {
+        allow read: if isMember(teamId);
+        allow create: if signedIn() && request.auth.uid == memberId && (
+          get(/databases/$(database)/documents/teams/$(teamId)).data.createdBy == request.auth.uid ||
+          (request.resource.data.inviteCode is string
+            && exists(/databases/$(database)/documents/invites/$(request.resource.data.inviteCode))
+            && get(/databases/$(database)/documents/invites/$(request.resource.data.inviteCode)).data.teamId == teamId)
+        );
+        allow update: if isAdmin(teamId) || (signedIn() && request.auth.uid == memberId);
+        allow delete: if isAdmin(teamId) && memberId != request.auth.uid;
+      }
+
+      match /participants/{participantId} {
+        allow read: if isMember(teamId);
+        allow create: if isAdmin(teamId) || (isMember(teamId) && request.resource.data.linkedUid == request.auth.uid);
+        allow update: if isAdmin(teamId) || (isMember(teamId) && resource.data.linkedUid == request.auth.uid);
+        allow delete: if isAdmin(teamId);
+      }
+
+      match /entries/{entryId} {
+        allow read: if isMember(teamId);
+        allow create: if isMember(teamId) && request.resource.data.createdBy == request.auth.uid;
+        allow update: if isMember(teamId);
+        allow delete: if isAdmin(teamId) || (isMember(teamId) && resource.data.createdBy == request.auth.uid);
+      }
+
+      match /timers/{timerId} {
+        allow read, create, update, delete: if isMember(teamId);
+      }
+
+      match /settlements/{settlementId} {
+        allow read, create, update: if isMember(teamId);
+        allow delete: if isAdmin(teamId);
+      }
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
